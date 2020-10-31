@@ -111,6 +111,165 @@ int srrip_replacement_policy (int idx,
                              operation_result* result,
                              bool debug)
 {
+   ///////////////////////////////////////
+   // Variables 
+   ///////////////////////////////////////
+   int M;
+   int space_empty;
+   int distant_Block;
+   int distant = pow(2, M) - 1;   // distant victim
+   int long_rrpv = pow(2, M) - 2; // for new block with a long Rr interval
+   ///// FLAGS
+   bool hit_found_YorN = false;
+   bool empty_found_YorN = false;
+   bool higher_RRPV = false;
+
+   ///////////////////////////////////////
+   // Validate initial data
+   ///////////////////////////////////////
+      // idx, tag, associativity < 0
+   if (idx < 0 || tag < 0 || associativity < 0)
+   {
+      return PARAM;
+   }
+   // associativity <= 2
+   if (associativity <= 2)
+   {
+      M = 1;
+   }
+   // if not
+   else
+   {
+      M = 2;
+   }
+
+   ///////////////////////////////////////
+   // Stactic RRIP - Re-reference Interval Prediction
+   ///////////////////////////////////////
+   //*********************
+   // Empty | Hit | Rr distant
+   //*********************
+   for (int i = 0; i < associativity; i++)
+   {
+   //*********************
+   // If Hit
+   //*********************
+
+      if (cache_blocks[i].valid && tag == cache_blocks[i].tag)
+      { 
+      // When hit 
+         hit_found_YorN = true;
+         cache_blocks[i].rp_value = 0;
+         if (loadstore == true)
+         { 
+         // Write 
+            cache_blocks[i].dirty = 1;
+            (*result).dirty_eviction = false;
+            (*result).miss_hit = HIT_STORE;
+         }
+         else
+         { // Read
+            (*result).dirty_eviction = false;
+            (*result).miss_hit = HIT_LOAD;
+         }
+         return OK;
+      } // close cache_blocks[i].valid && tag == cache_blocks[i].tag
+      // Save empty ->
+      else if (!cache_blocks[i].valid && !empty_found_YorN)
+      {
+         empty_found_YorN = true;
+         space_empty = i;
+      }
+      // Save distant -> block 
+      if (cache_blocks[i].rp_value == distant && !higher_RRPV)
+      {
+         higher_RRPV = true;
+         distant_Block = i;
+      }
+   }
+
+   ///////////////////////////////////////
+   // Stactic RRIP - Re-reference Interval Prediction
+   ///////////////////////////////////////
+   //*********************
+   // EMPTY = SPACE and Misses
+   //*********************
+   if ((empty_found_YorN == true) && (hit_found_YorN == false))
+   {
+      cache_blocks[space_empty].valid = 1;
+      cache_blocks[space_empty].tag = tag;
+      cache_blocks[space_empty].rp_value = long_rrpv;
+      if (loadstore)
+      { 
+      // Write
+         (*result).dirty_eviction = false;
+         cache_blocks[space_empty].dirty = 1;
+         (*result).miss_hit = MISS_STORE;
+      }
+      else
+      { 
+      // Read
+         (*result).dirty_eviction = false;
+         cache_blocks[space_empty].dirty = 0;
+         (*result).miss_hit = MISS_LOAD;
+      }
+   }
+
+   ///////////////////////////////////////
+   // Stactic RRIP - Re-reference Interval Prediction
+   ///////////////////////////////////////
+   //*********************
+   // FULL or MISS
+   //*********************
+   else if ((empty_found_YorN == false) && (hit_found_YorN == false))
+   {
+   ImmediateFuture:
+      if (higher_RRPV == true)
+      {
+         if (cache_blocks[distant_Block].dirty)
+         { // write-back
+            (*result).dirty_eviction = true;
+         }
+         else { 
+         // vic block
+            (*result).dirty_eviction = false;
+            (*result).evicted_address = cache_blocks[distant_Block].tag;
+            cache_blocks[distant_Block].valid = 1;
+            cache_blocks[distant_Block].tag = tag;
+            cache_blocks[distant_Block].rp_value = long_rrpv;
+         }
+         if (loadstore == true)
+         { 
+         // Write
+            cache_blocks[distant_Block].dirty = 1;
+            (*result).miss_hit = MISS_STORE;
+         } // end write 
+         else
+         { 
+         // Read
+            cache_blocks[distant_Block].dirty = 0;
+            (*result).miss_hit = MISS_LOAD;
+         } // end read 
+      }
+   //*********************
+   // ELSE 
+   //*********************
+      else
+      {
+         for (int i = 0; i < associativity; i++)
+         {
+            cache_blocks[i].rp_value++;
+            if ((cache_blocks[i].rp_value == distant) && (!higher_RRPV) )
+            {
+               higher_RRPV = true;
+               distant_Block = i;
+            }
+         }
+         goto ImmediateFuture ;
+      }
+   }
+   return OK;
+   }
    return ERROR;
 }
 
