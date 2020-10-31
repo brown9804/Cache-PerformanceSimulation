@@ -8,7 +8,7 @@
 ## Integrants
 1. Brown Ramírez, Timna Belinda  B61254
 2. Esquivel Molina, Brandon B52571
-3. 
+3. Ramírez Hernández, Jonathan B55730
 
 
 ## Advance cache simulator project baseline
