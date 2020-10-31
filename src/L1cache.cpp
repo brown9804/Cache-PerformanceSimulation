@@ -16,6 +16,31 @@
 #define ADDRSIZE 32
 using namespace std;
 
+// function.
+// Checking the parameters status, on boundary etc
+int params_check(int idx, int tag, int associativity){
+  int ok_param = OK;
+  int assocPower2 = associativity;
+  if (idx >= 0 && tag >= 0 && associativity > 0) {
+    //we need to checks if associativity is a power of 2, based on the spacial principle
+    while(assocPower2%2==0 && assocPower2 > 1){ // across all values power of two.
+      assocPower2 /= 2;
+    }
+    if (associativity%2!=0){
+      ok_param = PARAM;
+    }
+    if (assocPower2==1){
+      ok_param = OK;
+    }else {
+      ok_param = PARAM;
+    }
+  } else {
+    ok_param = PARAM;
+  }
+  return ok_param;
+}
+////////////////////////////////////////
+
 int field_size_get(struct cache_params cache_params,
                    struct cache_field_size *field_size)
 {
