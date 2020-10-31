@@ -39,8 +39,8 @@ void address_tag_idx_get(long address,
                          int *tag)
 {
    long indexMASK = (1 << field_size.idx) - 1;
-   *idx = (address >> field_size.offset) & indexMASK;
    long tagMASK = (1 << field_size.tag) - 1;
+   *idx = (address >> field_size.offset) & indexMASK;
    *tag = (address >> (field_size.offset + field_size.idx)) & tagMASK;
 }
 // ------------- BEGIN - BROWN, BELINDA ----------------
