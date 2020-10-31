@@ -192,7 +192,6 @@ int nru_replacement_policy(int idx,
                            operation_result* operation_result,
                            bool debug=false);
 
-#endif
 /*
  * Invalidates a line in the cache
  *
@@ -208,3 +207,15 @@ int l1_line_invalid_set(int tag,
                         int associativity,
                         entry* cache_blocks,
                         bool debug);
+
+
+/* Check parameters
+* idx: index field of the block
+* tag: tag field of the block
+* associativity: number of ways of the entry
+*/
+int params_check(int idx,
+                int tag,
+                int associativity);
+
+#endif
