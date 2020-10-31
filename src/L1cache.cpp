@@ -109,5 +109,70 @@ int nru_replacement_policy(int idx,
                            operation_result* operation_result,
                            bool debug)
 {
+for(int i=0; i < associativity; i++)
+	{
+		if(cache_blocks[idx*associativity+i].tag == tag) /*HIT*/
+		{
+			if(loadstore == 0) /*Load*/
+			{
+				H_L = H_L+1;
+			}
+			else /*Store*/
+			{
+				H_S = H_S+1;
+			}
+			cache_blocks[idx*associativity+i].rp_value = 0;
+			cache_blocks[idx*associativity+i].dirty = 0; /* No write */
+		}
+		else
+		{
+			if(i == associativity-1) /*Set is done?*/ /*MISS*/
+			{
+				if(loadstore == 0) /*Load*/
+				{
+					M_L = M_L+1;
+				}
+				else /*Store*/
+				{
+					M_S = M_S+1;
+				}
+				
+				/*Victim search*/
+				bool rep_ok = false;
+				while(rep_ok==false)
+				{
+					for(int j=0; j < associativity; j++)
+					{
+						if(cache_blocks[idx*associativity+j].rp_value == 1) /*Victim found*/
+						{
+							if(cache_blocks[idx*associativity+j].dirty = 1)
+							{
+								operation_result[idx*associativity+j].dirty_eviction = 1;
+								operation_result[idx*associativity+j].evicted_address = 1;
+							}
+							
+							/*Replacement*/	
+							cache_blocks[idx*associativity+j].rp_value = 0;
+							cache_blocks[idx*associativity+j].tag = tag;
+							cache_blocks[idx*associativity+j].valid = 1;
+							cache_blocks[idx*associativity+j].dirty = 1;
+							
+							rep_ok = true;	
+						}
+						else
+						{
+							if(j == associativity-1) /*Set is done?*/ /*There's no 1 found*/
+							{
+								for(int k=0; k < associativity; k++)
+								{
+									cache_blocks[idx*associativity+k].rp_value = 1;
+								}
+							}
+						}
+					}
+				}	
+			}
+		}
+	}
    return ERROR;
 }
