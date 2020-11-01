@@ -414,6 +414,12 @@ int lru_replacement_policy (int idx,
   
   // ------------- END - ESQUIVEL, BRANDON ----------------
   
+
+
+
+
+
+
 int nru_replacement_policy(int idx,
                            int tag,
                            int associativity,
@@ -421,55 +427,77 @@ int nru_replacement_policy(int idx,
                            entry* cache_blocks,
                            operation_result* operation_result,
                            bool debug)
-{for(int i=0; i < associativity; i++)
-	{
-		if(cache_blocks[idx*associativity+i].tag == tag) /*HIT*/
+{
+	bool miss_find = false;
+	HIT:
+		bool tag_found = false;
+		for(int i=0; i < associativity; i++)
 		{
-			if(loadstore == 0) /*Load*/
-			{
-				H_L = H_L+1;
-			}
-			else /*Store*/
-			{
-				H_S = H_S+1;
-			}
-			cache_blocks[idx*associativity+i].rp_value = 0;
-			cache_blocks[idx*associativity+i].dirty = 0; /* No write */
-		}
-		else
-		{
-			if(i == associativity-1) /*Set is done?*/ /*MISS*/
+			if(cache_blocks[idx*associativity+i].tag == tag&&tag_found == 0&&cache_blocks[idx*associativity+i].valid==1) /*HIT*/
 			{
 				if(loadstore == 0) /*Load*/
 				{
-					M_L = M_L+1;
+					LOAD_HIT = LOAD_HIT+1;
 				}
 				else /*Store*/
 				{
-					M_S = M_S+1;
+					STORE_HIT = STORE_HIT+1;
 				}
-
-				/*Victim search*/
-				bool rep_ok = false;
-				while(rep_ok==false)
+				cache_blocks[idx*associativity+i].rp_value = 0;
+				cache_blocks[idx*associativity+i].dirty = 0; /* No write */
+				miss_find = false;
+				tag_found = true;
+			}
+			
+			if(tag_found == 0)
+			{
+				if(i == associativity-1)	/*Set is done?*/ /*MISS*/
+				{
+					miss_find = true;
+				}
+			}
+		}
+	
+	VICTIM_SEARCH:
+		if(miss_find == true)
+		{
+			if(loadstore == 0) /*Load*/
+			{
+				LOAD_MISS = LOAD_MISS+1;
+			}
+			else /*Store*/
+			{
+				STORE_MISS = STORE_MISS+1;
+			}
+				
+			/* NRU EMPTY WAY/VICTIM SEARCH */
+			bool victim_found = false;
+			bool one_found = false;
+			bool empty_found = false;
+			int way;
+			
+			/* EMPTY WAY */
+			for(int j=0; j < associativity; j++)
+			{
+				if(cache_blocks[idx*associativity+j].valid == 0&&empty_found==0)
+				{
+					way = j;
+					empty_found = true;
+				}
+			}		
+			
+			/* VICTIM SEARCH */
+			if(empty_found == 0)
+			{
+				while(victim_found==false)
 				{
 					for(int j=0; j < associativity; j++)
 					{
-						if(cache_blocks[idx*associativity+j].rp_value == 1) /*Victim found*/
+						if(cache_blocks[idx*associativity+j].rp_value == 1&&one_found == 0) /*Victim found*/
 						{
-							if(cache_blocks[idx*associativity+j].dirty = 1)
-							{
-								operation_result[idx*associativity+j].dirty_eviction = 1;
-								operation_result[idx*associativity+j].evicted_address = 1;
-							}
-
-							/*Replacement*/	
-							cache_blocks[idx*associativity+j].rp_value = 0;
-							cache_blocks[idx*associativity+j].tag = tag;
-							cache_blocks[idx*associativity+j].valid = 1;
-							cache_blocks[idx*associativity+j].dirty = 1;
-
-							rep_ok = true;	
+							victim_found = true;
+							one_found = true;
+							way = j;
 						}
 						else
 						{
@@ -482,9 +510,24 @@ int nru_replacement_policy(int idx,
 							}
 						}
 					}
-				}	
+				}
 			}
-		}
-	}
-   return ERROR;
+			
+			/* Way found */
+			/*Dirty cell manage*/
+		
+			if(cache_blocks[idx*associativity+way].dirty == true)
+			{
+				DIRTY_EVICTION = DIRTY_EVICTION+1;
+				operation_result[idx*associativity+way].dirty_eviction = 1;
+				operation_result[idx*associativity+way].evicted_address = cache_blocks[idx*associativity+way].tag;
+			}
+			
+			/*Replacement*/
+			cache_blocks[idx*associativity+way].rp_value = 0;
+			cache_blocks[idx*associativity+way].tag = tag;
+			cache_blocks[idx*associativity+way].valid = 1;
+			cache_blocks[idx*associativity+way].dirty = 1;					
+		}				
+	return ERROR;
 }
