@@ -35,10 +35,12 @@ enum miss_hit_status {
 
 
 /*--------------------------------Jonathan---------------------------------------------*/
-int M_L = 0;
-int M_S = 0;
-int H_L = 0;
-int H_S = 0;
+/* Counters */
+int LOAD_MISS;
+int STORE_MISS;
+int LOAD_HIT;
+int STORE_HIT;
+int DIRTY_EVICTION;
 /*-------------------------------------------------------------------------------------*/
 /*
  * STRUCTS
