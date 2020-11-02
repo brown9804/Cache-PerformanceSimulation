@@ -181,7 +181,7 @@ int srrip_replacement_policy (int idx,
          space_empty = i;
       }
       // Save distant -> block 
-      if (cache_blocks[i].rp_value == distant && !higher_RRPV)
+      if ((cache_blocks[i].rp_value == distant) && (!higher_RRPV))
       {
          higher_RRPV = true;
          distant_Block = i;
@@ -256,23 +256,25 @@ int srrip_replacement_policy (int idx,
          }
          else { 
          // vic block
-            (*result).dirty_eviction = false;
-            (*result).evicted_address = cache_blocks[distant_Block].tag;
             cache_blocks[distant_Block].valid = 1;
             cache_blocks[distant_Block].tag = tag;
             cache_blocks[distant_Block].rp_value = long_rrpv;
+	// result 
+            (*result).dirty_eviction = false;
+            (*result).evicted_address = cache_blocks[distant_Block].tag;
+
          }
          if (loadstore == true)
          { 
          // Write
-            cache_blocks[distant_Block].dirty = 1;
             (*result).miss_hit = MISS_STORE;
+            cache_blocks[distant_Block].dirty = 1;
          } // end write 
          else
          { 
          // Read
-            cache_blocks[distant_Block].dirty = 0;
             (*result).miss_hit = MISS_LOAD;
+            cache_blocks[distant_Block].dirty = 0;
          } // end read 
       }
    //*********************
@@ -280,7 +282,7 @@ int srrip_replacement_policy (int idx,
    //*********************
       else
       {
-         for (int i = 0; i < associativity; i++)
+         for (int i = 0; i < associativity; i= i + 1)
          {
             cache_blocks[i].rp_value++;
             if ((cache_blocks[i].rp_value == distant) && (!higher_RRPV) )
