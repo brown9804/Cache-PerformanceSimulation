@@ -445,6 +445,21 @@ int lru_replacement_policy (int idx,
 
 
 
+// ------------- BEGIN - RAMIREZ, JONATHAN ----------------
+/* @Jonsofmath Jonathan Ramírez Hernández.
+   jonathan.ramirez15@ucr.ac.cr
+   November, 2020
+
+   NRU replacement policy. 
+   Algorithm:
+   In a cache HIT:
+   	1. Set NRU-bit of block to '0'
+   In a cache MISS:
+   	1. Search for the first '1' from left.
+	2. If '1' found go to step (5). 
+	3. Set all NRU-bits to '1'
+	4. Go to step (1)
+	5. Replace block and set NRU-bit to '1'. */
 
 int nru_replacement_policy(int idx,
                            int tag,
@@ -557,3 +572,5 @@ int nru_replacement_policy(int idx,
 		}				
 	return ERROR;
 }
+
+// ------------- END - RAMIREZ, JONATHAN ----------------
