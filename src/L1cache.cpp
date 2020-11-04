@@ -478,11 +478,13 @@ int nru_replacement_policy(int idx,
 			{
 				if(loadstore == 0) /*Load*/
 				{
-					LOAD_HIT = LOAD_HIT+1;
+					(*operation_result).miss_hit = HIT_LOAD;
+					//LOAD_HIT = LOAD_HIT+1;
 				}
 				else /*Store*/
 				{
-					STORE_HIT = STORE_HIT+1;
+					(*operation_result).miss_hit = HIT_STORE;
+					//STORE_HIT = STORE_HIT+1;
 				}
 				cache_blocks[idx*associativity+i].rp_value = 0;
 				cache_blocks[idx*associativity+i].dirty = 0; /* No write */
@@ -504,11 +506,13 @@ int nru_replacement_policy(int idx,
 		{
 			if(loadstore == 0) /*Load*/
 			{
-				LOAD_MISS = LOAD_MISS+1;
+				(*operation_result).miss_hit = MISS_LOAD;
+				//LOAD_MISS = LOAD_MISS+1;
 			}
 			else /*Store*/
 			{
-				STORE_MISS = STORE_MISS+1;
+				(*operation_result).miss_hit = HIT_STORE;
+				//STORE_MISS = STORE_MISS+1;
 			}
 				
 			/* NRU EMPTY WAY/VICTIM SEARCH */
