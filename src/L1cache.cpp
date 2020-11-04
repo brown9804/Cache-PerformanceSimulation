@@ -563,7 +563,7 @@ int nru_replacement_policy(int idx,
 		
 			if(cache_blocks[idx*associativity+way].dirty == true)
 			{
-				DIRTY_EVICTION = DIRTY_EVICTION+1;
+				//DIRTY_EVICTION = DIRTY_EVICTION+1;
 				operation_result[idx*associativity+way].dirty_eviction = 1;
 				operation_result[idx*associativity+way].evicted_address = cache_blocks[idx*associativity+way].tag;
 			}
