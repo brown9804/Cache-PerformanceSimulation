@@ -209,6 +209,14 @@ int size_p=atoi(argv[2]);
 		/*-----------------------------------------------------------------------------------------------*/		
   	}
   	fclose(stdin);
+	int dirty_count;
+	for(i=0;i<sets*assoc_p;i++)
+	{
+		if(operation_result[i].dirty_eviction == 1)
+		{
+			dirty_count = dirty_count+1;	
+		}
+	}
   /*-------------------------------------------------------------------------------*/
 	/* Print cache configuration */
 	
