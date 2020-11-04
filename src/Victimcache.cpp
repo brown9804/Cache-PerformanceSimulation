@@ -67,7 +67,7 @@ int lru_replacement_policy_l1_vc(
 	int l1_vc_related_assoc = l1_vc_info->vc_assoc;
 	////
 	int l1_evic_addr = l1_result->evicted_address;
-	bool vc_dirty_evic vc_result->dirty_eviction;
+	bool vc_dirty_evic = vc_result->dirty_eviction;
 	int vc_evic_addr = vc_result->evicted_address;
 	//////
 	int amount_valids = 0;
