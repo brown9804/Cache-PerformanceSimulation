@@ -241,7 +241,7 @@ int lru_replacement_policy_l1_vc(
 			vc_cache_blocks[0].dirty = mem_dirty;
 /////////////////////////////
 //////// UPDATE INFORMATION ,,,,
-//////// VALID AND DIRTY BIT 
+////////  DIRTY BIT & DIRTY BIT
 //////// THEN TAGS
 ////////////////////////////////			
 			for (int i = 0; i < l1_l1_related_assoc; i = i + 1)
@@ -251,6 +251,19 @@ int lru_replacement_policy_l1_vc(
 					amount_valids = amount_valids + 1;
 				}
 			}
+
+			////////////////
+			///// EVICTION
+			///////////////
+			if (l1_dirty_eviction == true)
+			{
+				vc_cache_blocks[0].dirty = true;
+			}
+			else
+			{
+				vc_cache_blocks[0].dirty = false;
+			}
+
 			////////////////////
 			////// AMOUNT OF VALID
 			////////////////////
@@ -261,17 +274,6 @@ int lru_replacement_policy_l1_vc(
 			else
 			{
 				vc_cache_blocks[0].valid = false;
-			}
-			////////////////
-			///// EVICTION
-			///////////////
-			if (l1_dirty_eviction)
-			{
-				vc_cache_blocks[0].dirty = true;
-			}
-			else
-			{
-				vc_cache_blocks[0].dirty = false;
 			}
 		}
 	}
