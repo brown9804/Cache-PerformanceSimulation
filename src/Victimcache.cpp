@@ -70,6 +70,7 @@ int lru_replacement_policy_l1_vc(
 	bool vc_dirty_evic = vc_result->dirty_eviction;
 	int vc_evic_addr = vc_result->evicted_address;
 	//////
+	int a = 0;
 	int i = 0;
 	int j = 0;
 	int k = 0;
@@ -86,12 +87,13 @@ int lru_replacement_policy_l1_vc(
 	///////////////////////////////////////
 	// Validate L1 space? -> ENABLE victim cache
 	///////////////////////////////////////
-	for (int i = 0; i < l1vc_l1_related_assoc; i= i + 1)
+	while (a < l1vc_l1_related_assoc)
 	{
-		if (l1_cache_blocks[i].valid) // if true 
+		if (l1_cache_blocks[i].valid) // if true
 		{
 			amount_valids_active = amount_valids_active + 1;
 		}
+		a = a + 1;
 	}
 
 	if (amount_valids_active == l1vc_l1_related_assoc)
@@ -114,7 +116,7 @@ int lru_replacement_policy_l1_vc(
 	///////////////////////////////////////
 	while (j < l1vc_l1_related_assoc)
 	{
-		if ((hit_found_YorN_VC == false) && ((l1vc_l1_related_tag) == vc_cache_blocks[i].tag))
+		if ((hit_found_YorN_VC != true) && ((l1vc_l1_related_tag) == vc_cache_blocks[i].tag))
 		{
 			hit_found_YorN_VC = true;
 		}
@@ -135,7 +137,7 @@ int lru_replacement_policy_l1_vc(
 	///////////////////////////////////////
 	// Cache Miss or Victim Hit
 	///////////////////////////////////////
-	if ((hit_found_YorN_L1 == false) && (hit_found_YorN_VC == true))
+	if ((hit_found_YorN_L1 != true) && (hit_found_YorN_VC == true))
 	{
 		lru_replacement_policy(l1vc_l1_related_idx,
 							   l1vc_l1_related_tag,
@@ -179,7 +181,7 @@ int lru_replacement_policy_l1_vc(
 	/////////////////////
 	// Cache Miss or Victim Miss
 	/////////////////////
-	if ((hit_found_YorN_VC == false) && (hit_found_YorN_L1 == false))
+	if ((hit_found_YorN_VC != true) && (hit_found_YorN_L1 != true))
 	{
 
 		lru_replacement_policy(l1vc_l1_related_idx,
@@ -198,7 +200,7 @@ int lru_replacement_policy_l1_vc(
 		}
 		else
 		{
-			(vc_dirty_evic) = false;
+			vc_dirty_evic = false;
 		}
 		// Update the address on VC for the eviction
 		vc_evic_addr = vc_cache_blocks[l1vc_vc_related_assoc - 1].tag;
@@ -269,7 +271,7 @@ int lru_replacement_policy_l1_vc(
 				vc_cache_blocks[0].valid = false;
 			}
 
-			else 
+			else // if equals valids to assoc
 			{
 				vc_cache_blocks[0].valid = true;
 			}
