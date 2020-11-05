@@ -70,7 +70,6 @@ int lru_replacement_policy_l1_vc(
 	bool vc_dirty_evic = vc_result->dirty_eviction;
 	int vc_evic_addr = vc_result->evicted_address;
 	//////
-	int a = 0;
 	int i = 0;
 	int j = 0;
 	int k = 0;
@@ -87,13 +86,12 @@ int lru_replacement_policy_l1_vc(
 	///////////////////////////////////////
 	// Validate L1 space? -> ENABLE victim cache
 	///////////////////////////////////////
-	while (a < l1vc_l1_related_assoc)
+	for (int i = 0; i < l1vc_l1_related_assoc; i= i + 1)
 	{
-		if (l1_cache_blocks[a].valid) // if true
+		if (l1_cache_blocks[i].valid) // if true 
 		{
 			amount_valids_active = amount_valids_active + 1;
 		}
-		a = a + 1;
 	}
 
 	if (amount_valids_active == l1vc_l1_related_assoc)
@@ -116,7 +114,7 @@ int lru_replacement_policy_l1_vc(
 	///////////////////////////////////////
 	while (j < l1vc_l1_related_assoc)
 	{
-		if ((hit_found_YorN_VC != true) && ((l1vc_l1_related_tag) == vc_cache_blocks[j].tag))
+		if ((hit_found_YorN_VC == false) && ((l1vc_l1_related_tag) == vc_cache_blocks[i].tag))
 		{
 			hit_found_YorN_VC = true;
 		}
@@ -137,7 +135,7 @@ int lru_replacement_policy_l1_vc(
 	///////////////////////////////////////
 	// Cache Miss or Victim Hit
 	///////////////////////////////////////
-	if ((hit_found_YorN_L1 != true) && (hit_found_YorN_VC == true))
+	if ((hit_found_YorN_L1 == false) && (hit_found_YorN_VC == true))
 	{
 		lru_replacement_policy(l1vc_l1_related_idx,
 							   l1vc_l1_related_tag,
@@ -154,9 +152,9 @@ int lru_replacement_policy_l1_vc(
 		/////////////////////
 		while (k < l1vc_vc_related_assoc)
 		{
-			if (l1vc_l1_related_tag == vc_cache_blocks[k].tag)
+			if (l1vc_l1_related_tag == vc_cache_blocks[i].tag)
 			{
-				vc_cache_blocks[k].tag = l1_evic_addr;
+				vc_cache_blocks[i].tag = l1_evic_addr;
 			}
 			k = k + 1;
 		}
@@ -181,7 +179,7 @@ int lru_replacement_policy_l1_vc(
 	/////////////////////
 	// Cache Miss or Victim Miss
 	/////////////////////
-	if ((hit_found_YorN_VC != true) && (hit_found_YorN_L1 != true))
+	if ((hit_found_YorN_VC == false) && (hit_found_YorN_L1 == false))
 	{
 
 		lru_replacement_policy(l1vc_l1_related_idx,
@@ -200,7 +198,7 @@ int lru_replacement_policy_l1_vc(
 		}
 		else
 		{
-			vc_dirty_evic = false;
+			(vc_dirty_evic) = false;
 		}
 		// Update the address on VC for the eviction
 		vc_evic_addr = vc_cache_blocks[l1vc_vc_related_assoc - 1].tag;
@@ -236,17 +234,15 @@ int lru_replacement_policy_l1_vc(
 			bool mem_dirty = vc_cache_blocks[0].dirty;
 			while (f < l1vc_vc_related_assoc - 1)
 			{ // Needed flags
-				vc_cache_blocks[f + 1].valid = mem_valid;
-				vc_cache_blocks[f + 1].tag = mem;
-				vc_cache_blocks[f + 1].dirty = mem_dirty;
-				mem = vc_cache_blocks[f + 1].tag;
-				mem_valid = vc_cache_blocks[f + 1].valid;
-				mem_dirty = vc_cache_blocks[f + 1].dirty;
+				vc_cache_blocks[i + 1].valid = mem_valid;
+				vc_cache_blocks[i + 1].tag = mem;
+				vc_cache_blocks[i + 1].dirty = mem_dirty;
+				mem = vc_cache_blocks[i + 1].tag;
+				mem_valid = vc_cache_blocks[i + 1].valid;
+				mem_dirty = vc_cache_blocks[i + 1].dirty;
 				f = f + 1;
 			}
-			/////////////////////////////////////////
-			/// Asssing values -> victim cache blocks
-			/////////////////////////////////////////
+
 			vc_cache_blocks[0].valid = mem_valid;
 			vc_cache_blocks[0].dirty = mem_dirty;
 			vc_cache_blocks[0].tag = mem;
@@ -258,7 +254,7 @@ int lru_replacement_policy_l1_vc(
 			////////////////////////////////
 			while (p < l1vc_l1_related_assoc)
 			{
-				if (l1_cache_blocks[p].valid == true)
+				if (l1_cache_blocks[i].valid == true)
 				{
 					amount_valids = amount_valids + 1;
 				}
@@ -273,7 +269,7 @@ int lru_replacement_policy_l1_vc(
 				vc_cache_blocks[0].valid = false;
 			}
 
-			else // if equals valids to assoc
+			else 
 			{
 				vc_cache_blocks[0].valid = true;
 			}
