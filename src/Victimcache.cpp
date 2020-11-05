@@ -245,7 +245,7 @@ int lru_replacement_policy_l1_vc(
 				f = f + 1;
 			}
 			/////////////////////////////////////////
-			/// Asssing values -> victim cache blocks 
+			/// Asssing values -> victim cache blocks
 			/////////////////////////////////////////
 			vc_cache_blocks[0].valid = mem_valid;
 			vc_cache_blocks[0].dirty = mem_dirty;
