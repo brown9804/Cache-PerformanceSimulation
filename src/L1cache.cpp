@@ -41,7 +41,7 @@ int params_check(int idx, int tag, int associativity){
 }
 ////////////////////////////////////////
 
-int field_size_get(struct cache_params cache_params,
+int field_size_get(struct cache_pararms cache_params,
                    struct cache_field_size *field_size)
 {
    (*field_size).idx = log2((cache_params.size * KB) / (cache_params.block_size * cache_params.asociativity));
@@ -295,7 +295,7 @@ int srrip_replacement_policy (int idx,
       }
    }
    return OK;
-   }
+ 
    return ERROR;
 }
 
