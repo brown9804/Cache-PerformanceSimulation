@@ -144,7 +144,5 @@ else // 2. Depends on load - store do same thing on l2:
 
 }
 
-
-
 return OK;
 }
