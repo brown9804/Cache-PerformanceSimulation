@@ -33,4 +33,3 @@ entry_info generate_entry_info(sizes sizes);
 void print_way_info(int idx, int associativity, entry* cache_blocks);
 
 #endif
-
