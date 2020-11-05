@@ -10,8 +10,6 @@
 #include <debug_utilities.h>
 #include <L1cache.h>
 
-
-
 class L1cache : public ::testing::Test{
     protected:
 	int debug_on;
@@ -294,7 +292,7 @@ TEST_F(L1cache, promotion){
   	int policy;
   	int associativity;
 	enum miss_hit_status expected_miss_hit;
- 	ool loadstore = 0;
+ 	bool loadstore = 0;
 	bool debug = 0;
 	struct operation_result result = {};
 	
@@ -830,16 +828,14 @@ TEST_F(L1cache, boundaries){
 	int associativity = 1;//just necesary for cache line definition
 	int policy;
 	bool loadstore;
-	struct entry cache_line[associativity];
-
-	struct operation_result result = {};
 	bool debug;
 	int expected_param_result = PARAM;
 	int parameter_result;
+	struct entry cache_set[associativity];
+	struct operation_result result = {};
 
 	/*Choose a random policy*/
 	policy = rand()%3;//Check
-
 
 	/*Choose invalid parameters for idx, tag and asociativy*/
 	idx = -12;
@@ -852,8 +848,8 @@ TEST_F(L1cache, boundaries){
 				        tag,
 				        associativity,
 				        loadstore,
-				        cache_set_A,
-				        &resultA,
+				        cache_set,
+				        &result,
 				        bool(debug_on));
 		EXPECT_EQ(expected_param_result, parameter_result);
 	}
@@ -863,8 +859,8 @@ TEST_F(L1cache, boundaries){
 				        tag,
 				        associativity,
 				        loadstore,
-				        cache_set_A,
-				        &resultA,
+				        cache_set,
+				        &result,
 				        bool(debug_on));
 		EXPECT_EQ(expected_param_result, parameter_result);		
 	}
@@ -874,8 +870,8 @@ TEST_F(L1cache, boundaries){
 				        tag,
 				        associativity,
 				        loadstore,
-				        cache_set_A,
-				        &resultA,
+				        cache_set,
+				        &result,
 				        bool(debug_on));
 		EXPECT_EQ(expected_param_result, parameter_result);		
 	} 
