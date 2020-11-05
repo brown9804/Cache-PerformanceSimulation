@@ -78,7 +78,7 @@ struct operation_result {
 };
 
 /* Cache params */
-struct cache_params {
+struct cache_pararms {
   /* Total size of the cache in Kbytes */
   int size;
 
