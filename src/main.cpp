@@ -43,7 +43,7 @@ int main(int argc, char * argv []) {
   
   
 /*-------------------------Jonathan Ramirez------------------------------------------*/
-int size_p=atoi(argv[2]);
+
 	int policy;
 	int TOTAL_ADDRESS = 0;
 	
@@ -76,7 +76,7 @@ int size_p=atoi(argv[2]);
 		policy = RANDOM;
 	}	
 	
-	struct cache_params argv_prm;
+	struct cache_pararms argv_prm;
 	
 	argv_prm.size = size_p;
 	argv_prm.asociativity = assoc_p;
