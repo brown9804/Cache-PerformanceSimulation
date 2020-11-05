@@ -60,9 +60,9 @@ int lru_replacement_policy_l1_vc(
 	///////////////////////////////////////
 	// LOCAL
 	// l1_assoc in utilities
-	int l1_l1_related_idx = l1_vc_info->l1_idx;
-	int l1_l1_related_tag = l1_vc_info->l1_tag;
-	int l1_l1_related_assoc = l1_vc_info->l1_assoc;
+	int l1vc_l1_related_idx = l1_vc_info->l1_idx;
+	int l1vc_l1_related_tag = l1_vc_info->l1_tag;
+	int l1vc_l1_related_assoc = l1_vc_info->l1_assoc;
 	//// vc_assoc in utilities
 	int l1_vc_related_assoc = l1_vc_info->vc_assoc;
 	////
@@ -70,6 +70,7 @@ int lru_replacement_policy_l1_vc(
 	bool vc_dirty_evic = vc_result->dirty_eviction;
 	int vc_evic_addr = vc_result->evicted_address;
 	//////
+	int i = 0;
 	int amount_valids = 0;
 	int amount_valids_active = 0;
 	///// FLAGS
@@ -81,33 +82,35 @@ int lru_replacement_policy_l1_vc(
 	///////////////////////////////////////
 	// Validate L1 space? -> ENABLE victim cache
 	///////////////////////////////////////
-	for (int i = 0; i < (l1_l1_related_assoc); i= i + 1)
+	for (int i = 0; i < l1vc_l1_related_assoc; i= i + 1)
 	{
 		if (l1_cache_blocks[i].valid) // if true 
 		{
 			amount_valids_active = amount_valids_active + 1;
 		}
 	}
-	if (amount_valids_active == l1_l1_related_assoc)
+
+	if (amount_valids_active == l1vc_l1_related_assoc)
 	{
 		enable_VC = true;
 	}
 	///////////////////////////////////////
 	// Analyze if Cache Hit ->  L1 
 	///////////////////////////////////////
-	for (int i = 0; i < (l1_l1_related_assoc); i = i + 1)
+	while (i < l1vc_l1_related_assoc)
 	{
-		if (((l1_l1_related_tag) == l1_cache_blocks[i].tag) && (hit_found_YorN_L1 == false))
+		if ((hit_found_YorN_L1 == false) && ((l1vc_l1_related_tag) == l1_cache_blocks[i].tag))
 		{
 			hit_found_YorN_L1 = true;
 		}
+		i = i +1;
 	}
 
 	if (hit_found_YorN_L1 == true) // if hits ...
 	{
-		lru_replacement_policy(l1_l1_related_idx,
-							   l1_l1_related_tag,
-							   l1_l1_related_assoc,
+		lru_replacement_policy(l1vc_l1_related_idx,
+							   l1vc_l1_related_tag,
+							   l1vc_l1_related_assoc,
 							   loadstore,
 							   l1_cache_blocks,
 							   l1_result,
@@ -117,9 +120,9 @@ int lru_replacement_policy_l1_vc(
 	///////////////////////////////////////
 	// Analyze if Cache Hit ->  CV
 	///////////////////////////////////////
-	for (int i = 0; i < (l1_vc_related_assoc); i = i + 1)
+	for (int i = 0; i < l1_vc_related_assoc; i = i + 1)
 	{
-		if (((l1_l1_related_tag) == vc_cache_blocks[i].tag) && (hit_found_YorN_VC == false))
+		if ((hit_found_YorN_VC == false) && ((l1vc_l1_related_tag) == vc_cache_blocks[i].tag))
 		{
 			hit_found_YorN_VC = true;
 		}
@@ -130,9 +133,9 @@ int lru_replacement_policy_l1_vc(
 	///////////////////////////////////////
 	if ((hit_found_YorN_L1 == false) && (hit_found_YorN_VC == true))
 	{
-		lru_replacement_policy(l1_l1_related_idx,
-							   l1_l1_related_tag,
-							   l1_l1_related_assoc,
+		lru_replacement_policy(l1vc_l1_related_idx,
+							   l1vc_l1_related_tag,
+							   l1vc_l1_related_assoc,
 							   loadstore,
 							   l1_cache_blocks,
 							   l1_result,
@@ -143,11 +146,11 @@ int lru_replacement_policy_l1_vc(
 		// // cache and the one in the cache
 		/// replaces each other.
 		/////////////////////
-		for (int i = 0; i < (l1_vc_related_assoc); i = i + 1)
+		for (int i = 0; i < l1_vc_related_assoc; i = i + 1)
 		{
-			if (l1_l1_related_tag == vc_cache_blocks[i].tag)
+			if (l1vc_l1_related_tag == vc_cache_blocks[i].tag)
 			{
-				vc_cache_blocks[i].tag = (l1_evic_addr);
+				vc_cache_blocks[i].tag = l1_evic_addr;
 			}
 		}
 
@@ -171,22 +174,22 @@ int lru_replacement_policy_l1_vc(
 	/////////////////////
 	// Cache Miss or Victim Miss
 	/////////////////////
-	if ((hit_found_YorN_L1 == false) && (hit_found_YorN_VC == false))
+	if ((hit_found_YorN_VC == false) && (hit_found_YorN_L1 == false))
 	{
 
-		lru_replacement_policy(l1_l1_related_idx,
-							   l1_l1_related_tag,
-							   l1_l1_related_assoc,
+		lru_replacement_policy(l1vc_l1_related_idx,
+							   l1vc_l1_related_tag,
+							   l1vc_l1_related_assoc,
 							   loadstore,
 							   l1_cache_blocks,
 							   l1_result,
 							   debug);
-	/////////////
-	///// IF DIRTY BIT is high dirty eviction happens
-	///////
+		/////////////
+		///// IF DIRTY BIT is high dirty eviction happens
+		///////
 		if (vc_cache_blocks[l1_vc_related_assoc - 1].dirty == true)
 		{
-			(vc_dirty_evic) = true;
+			vc_dirty_evic = true;
 		}
 		else
 		{
@@ -200,8 +203,8 @@ int lru_replacement_policy_l1_vc(
 		///////////////////
 		if (loadstore == 1)
 		{
-			vc_cache_blocks[l1_vc_related_assoc - 1].dirty = true;
 			vc_result->miss_hit = MISS_STORE;
+			vc_cache_blocks[l1_vc_related_assoc - 1].dirty = true;
 		}
 
 		//////////////////
@@ -209,8 +212,8 @@ int lru_replacement_policy_l1_vc(
 		///////////////////
 		else
 		{
-			vc_cache_blocks[l1_vc_related_assoc - 1].dirty = false;
 			vc_result->miss_hit = MISS_LOAD;
+			vc_cache_blocks[l1_vc_related_assoc - 1].dirty = false;
 		}
 		//////////////////
 		//////// To replace VC's blocks
@@ -225,27 +228,25 @@ int lru_replacement_policy_l1_vc(
 			bool mem_valid= vc_cache_blocks[0].valid;
 			bool mem_dirty = vc_cache_blocks[0].dirty;
 			for (int i = 0; i < l1_vc_related_assoc - 1; i = i + 1)
-			{
-				bool aux_valid = vc_cache_blocks[i + 1].valid;
-				int aux = vc_cache_blocks[i + 1].tag;
-				bool aux_dirty = vc_cache_blocks[i + 1].dirty;
+			{ // Needed flags
 				vc_cache_blocks[i + 1].valid = mem_valid;
 				vc_cache_blocks[i + 1].tag = mem;
 				vc_cache_blocks[i + 1].dirty = mem_dirty;
-				mem = aux;
-				mem_valid= aux_valid;
-				mem_dirty = aux_dirty;
+				mem = vc_cache_blocks[i + 1].tag;
+				mem_valid = vc_cache_blocks[i + 1].valid;
+				mem_dirty = vc_cache_blocks[i + 1].dirty;
 			}
 
 			vc_cache_blocks[0].valid = mem_valid;
-			vc_cache_blocks[0].tag = l1_evic_addr;
 			vc_cache_blocks[0].dirty = mem_dirty;
-/////////////////////////////
-//////// UPDATE INFORMATION ,,,,
-////////  DIRTY BIT & DIRTY BIT
-//////// THEN TAGS
-////////////////////////////////			
-			for (int i = 0; i < l1_l1_related_assoc; i = i + 1)
+			vc_cache_blocks[0].tag = mem;
+			vc_cache_blocks[0].tag = l1_evic_addr;
+			/////////////////////////////
+			//////// UPDATE INFORMATION ,,,,
+			////////  DIRTY BIT & DIRTY BIT
+			//////// THEN TAGS
+			////////////////////////////////			
+			for (int i = 0; i < l1vc_l1_related_assoc; i = i + 1)
 			{
 				if (l1_cache_blocks[i].valid == true)
 				{
@@ -253,29 +254,31 @@ int lru_replacement_policy_l1_vc(
 				}
 			}
 
-			////////////////
-			///// EVICTION
-			///////////////
-			if (l1_dirty_eviction == true)
-			{
-				vc_cache_blocks[0].dirty = true;
-			}
-			else
-			{
-				vc_cache_blocks[0].dirty = false;
-			}
-
 			////////////////////
 			////// AMOUNT OF VALID
 			////////////////////
-			if (amount_valids == l1_l1_related_assoc)
-			{
-				vc_cache_blocks[0].valid = true;
-			}
-			else
+			if (amount_valids != l1vc_l1_related_assoc)
 			{
 				vc_cache_blocks[0].valid = false;
 			}
+
+			else 
+			{
+				vc_cache_blocks[0].valid = true;
+			}
+
+			////////////////
+			///// EVICTION
+			///////////////
+			if (l1_dirty_eviction == false)
+			{
+				vc_cache_blocks[0].dirty = false;
+			}
+			else
+			{
+				vc_cache_blocks[0].dirty = true;
+			}
+
 		}
 	}
 
