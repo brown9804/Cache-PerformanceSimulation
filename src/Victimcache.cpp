@@ -64,13 +64,17 @@ int lru_replacement_policy_l1_vc(
 	int l1vc_l1_related_tag = l1_vc_info->l1_tag;
 	int l1vc_l1_related_assoc = l1_vc_info->l1_assoc;
 	//// vc_assoc in utilities
-	int l1_vc_related_assoc = l1_vc_info->vc_assoc;
+	int l1vc_vc_related_assoc = l1_vc_info->vc_assoc;
 	////
 	int l1_evic_addr = l1_result->evicted_address;
 	bool vc_dirty_evic = vc_result->dirty_eviction;
 	int vc_evic_addr = vc_result->evicted_address;
 	//////
 	int i = 0;
+	int j = 0;
+	int k = 0;
+	int f = 0;
+	int p =0;
 	int amount_valids = 0;
 	int amount_valids_active = 0;
 	///// FLAGS
@@ -105,8 +109,19 @@ int lru_replacement_policy_l1_vc(
 		}
 		i = i +1;
 	}
+	///////////////////////////////////////
+	// Analyze if Cache Hit ->  CV
+	///////////////////////////////////////
+	while (j < l1vc_l1_related_assoc)
+	{
+		if ((hit_found_YorN_VC == false) && ((l1vc_l1_related_tag) == vc_cache_blocks[i].tag))
+		{
+			hit_found_YorN_VC = true;
+		}
+		j = j + 1;
+	}
 
-	if (hit_found_YorN_L1 == true) // if hits ...
+	if (hit_found_YorN_L1 == true) // if hits ... L1
 	{
 		lru_replacement_policy(l1vc_l1_related_idx,
 							   l1vc_l1_related_tag,
@@ -115,17 +130,6 @@ int lru_replacement_policy_l1_vc(
 							   l1_cache_blocks,
 							   l1_result,
 							   debug);
-	}
-
-	///////////////////////////////////////
-	// Analyze if Cache Hit ->  CV
-	///////////////////////////////////////
-	for (int i = 0; i < l1_vc_related_assoc; i = i + 1)
-	{
-		if ((hit_found_YorN_VC == false) && ((l1vc_l1_related_tag) == vc_cache_blocks[i].tag))
-		{
-			hit_found_YorN_VC = true;
-		}
 	}
 
 	///////////////////////////////////////
@@ -146,12 +150,13 @@ int lru_replacement_policy_l1_vc(
 		// // cache and the one in the cache
 		/// replaces each other.
 		/////////////////////
-		for (int i = 0; i < l1_vc_related_assoc; i = i + 1)
+		while (k < l1vc_vc_related_assoc)
 		{
 			if (l1vc_l1_related_tag == vc_cache_blocks[i].tag)
 			{
 				vc_cache_blocks[i].tag = l1_evic_addr;
 			}
+			k = k + 1;
 		}
 
 		//////////////////
@@ -187,7 +192,7 @@ int lru_replacement_policy_l1_vc(
 		/////////////
 		///// IF DIRTY BIT is high dirty eviction happens
 		///////
-		if (vc_cache_blocks[l1_vc_related_assoc - 1].dirty == true)
+		if (vc_cache_blocks[l1vc_vc_related_assoc - 1].dirty == true)
 		{
 			vc_dirty_evic = true;
 		}
@@ -196,7 +201,7 @@ int lru_replacement_policy_l1_vc(
 			(vc_dirty_evic) = false;
 		}
 		// Update the address on VC for the eviction
-		vc_evic_addr = vc_cache_blocks[l1_vc_related_assoc - 1].tag;
+		vc_evic_addr = vc_cache_blocks[l1vc_vc_related_assoc - 1].tag;
 
 		//////////////////
 		//////// Store // 1 true
@@ -204,7 +209,7 @@ int lru_replacement_policy_l1_vc(
 		if (loadstore == 1)
 		{
 			vc_result->miss_hit = MISS_STORE;
-			vc_cache_blocks[l1_vc_related_assoc - 1].dirty = true;
+			vc_cache_blocks[l1vc_vc_related_assoc - 1].dirty = true;
 		}
 
 		//////////////////
@@ -213,7 +218,7 @@ int lru_replacement_policy_l1_vc(
 		else
 		{
 			vc_result->miss_hit = MISS_LOAD;
-			vc_cache_blocks[l1_vc_related_assoc - 1].dirty = false;
+			vc_cache_blocks[l1vc_vc_related_assoc - 1].dirty = false;
 		}
 		//////////////////
 		//////// To replace VC's blocks
@@ -227,7 +232,7 @@ int lru_replacement_policy_l1_vc(
 			int mem = vc_cache_blocks[0].tag;
 			bool mem_valid= vc_cache_blocks[0].valid;
 			bool mem_dirty = vc_cache_blocks[0].dirty;
-			for (int i = 0; i < l1_vc_related_assoc - 1; i = i + 1)
+			while (f < l1vc_vc_related_assoc - 1)
 			{ // Needed flags
 				vc_cache_blocks[i + 1].valid = mem_valid;
 				vc_cache_blocks[i + 1].tag = mem;
@@ -235,6 +240,7 @@ int lru_replacement_policy_l1_vc(
 				mem = vc_cache_blocks[i + 1].tag;
 				mem_valid = vc_cache_blocks[i + 1].valid;
 				mem_dirty = vc_cache_blocks[i + 1].dirty;
+				f = f + 1;
 			}
 
 			vc_cache_blocks[0].valid = mem_valid;
@@ -245,13 +251,14 @@ int lru_replacement_policy_l1_vc(
 			//////// UPDATE INFORMATION ,,,,
 			////////  DIRTY BIT & DIRTY BIT
 			//////// THEN TAGS
-			////////////////////////////////			
-			for (int i = 0; i < l1vc_l1_related_assoc; i = i + 1)
+			////////////////////////////////
+			while (p < l1vc_l1_related_assoc)
 			{
 				if (l1_cache_blocks[i].valid == true)
 				{
 					amount_valids = amount_valids + 1;
 				}
+				p = p + 1;
 			}
 
 			////////////////////
