@@ -89,7 +89,7 @@ int lru_replacement_policy_l1_vc(
 	///////////////////////////////////////
 	while (a < l1vc_l1_related_assoc)
 	{
-		if (l1_cache_blocks[i].valid) // if true
+		if (l1_cache_blocks[a].valid) // if true
 		{
 			amount_valids_active = amount_valids_active + 1;
 		}
@@ -116,7 +116,7 @@ int lru_replacement_policy_l1_vc(
 	///////////////////////////////////////
 	while (j < l1vc_l1_related_assoc)
 	{
-		if ((hit_found_YorN_VC != true) && ((l1vc_l1_related_tag) == vc_cache_blocks[i].tag))
+		if ((hit_found_YorN_VC != true) && ((l1vc_l1_related_tag) == vc_cache_blocks[j].tag))
 		{
 			hit_found_YorN_VC = true;
 		}
@@ -154,9 +154,9 @@ int lru_replacement_policy_l1_vc(
 		/////////////////////
 		while (k < l1vc_vc_related_assoc)
 		{
-			if (l1vc_l1_related_tag == vc_cache_blocks[i].tag)
+			if (l1vc_l1_related_tag == vc_cache_blocks[k].tag)
 			{
-				vc_cache_blocks[i].tag = l1_evic_addr;
+				vc_cache_blocks[k].tag = l1_evic_addr;
 			}
 			k = k + 1;
 		}
@@ -236,15 +236,17 @@ int lru_replacement_policy_l1_vc(
 			bool mem_dirty = vc_cache_blocks[0].dirty;
 			while (f < l1vc_vc_related_assoc - 1)
 			{ // Needed flags
-				vc_cache_blocks[i + 1].valid = mem_valid;
-				vc_cache_blocks[i + 1].tag = mem;
-				vc_cache_blocks[i + 1].dirty = mem_dirty;
-				mem = vc_cache_blocks[i + 1].tag;
-				mem_valid = vc_cache_blocks[i + 1].valid;
-				mem_dirty = vc_cache_blocks[i + 1].dirty;
+				vc_cache_blocks[f + 1].valid = mem_valid;
+				vc_cache_blocks[f + 1].tag = mem;
+				vc_cache_blocks[f + 1].dirty = mem_dirty;
+				mem = vc_cache_blocks[f + 1].tag;
+				mem_valid = vc_cache_blocks[f + 1].valid;
+				mem_dirty = vc_cache_blocks[f + 1].dirty;
 				f = f + 1;
 			}
-
+			/////////////////////////////////////////
+			/// Asssing values -> victim cache blocks 
+			/////////////////////////////////////////
 			vc_cache_blocks[0].valid = mem_valid;
 			vc_cache_blocks[0].dirty = mem_dirty;
 			vc_cache_blocks[0].tag = mem;
@@ -256,7 +258,7 @@ int lru_replacement_policy_l1_vc(
 			////////////////////////////////
 			while (p < l1vc_l1_related_assoc)
 			{
-				if (l1_cache_blocks[i].valid == true)
+				if (l1_cache_blocks[p].valid == true)
 				{
 					amount_valids = amount_valids + 1;
 				}
