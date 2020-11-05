@@ -18,24 +18,23 @@ void print_cache (int cache_size, int assoc, int block_size)
 	std::cout<< "Cache Block Size (bytes): "<< block_size <<'\n';
 }
 
-void print_usage (int LOAD_MISS, int STORE_MISS, int LOAD_HIT, int STORE_HIT, int DIRTY_EVICTION, int TOTAL_ADDRESS)
+void print_usage (int LOAD_MISS_p, int STORE_MISS_p, int LOAD_HIT_p, int STORE_HIT_p, int DIRTY_EVICTION_p, int TOTAL_ADDRESS)
 {
 	
-	float MISS_RATE = (LOAD_MISS+STORE_MISS)*pow(TOTAL_ADDRESS,-1);
-	float READ_MISS_RATE = LOAD_MISS*pow(LOAD_MISS+STORE_MISS,-1);
+	float MISS_RATE_p = (LOAD_MISS_p+STORE_MISS_p)*pow(TOTAL_ADDRESS,-1);
+	float READ_MISS_RATE_p = LOAD_MISS_p*pow(LOAD_MISS_p+STORE_MISS_p,-1);
 	
-	std::cout<< "Overall miss rate: "<< MISS_RATE <<'\n';
-	std::cout<< "Read miss rate: "<< READ_MISS_RATE <<'\n';
-	std::cout<< "Dirty evictions: "<< DIRTY_EVICTION <<'\n';
-	std::cout<< "Load misses: "<< LOAD_MISS <<'\n';
-	std::cout<< "Store misses: "<< STORE_MISS <<'\n';
-	std::cout<< "Total_misses: "<< LOAD_MISS+STORE_MISS <<'\n';
-	std::cout<< "Load hits: "<< LOAD_HIT <<'\n';
-	std::cout<< "Store hits: "<< STORE_HIT <<'\n';
-	std::cout<< "Total hits: "<< LOAD_HIT + STORE_HIT <<'\n';
+	std::cout<< "Overall miss rate: "<< MISS_RATE_p <<'\n';
+	std::cout<< "Read miss rate: "<< READ_MISS_RATE_p <<'\n';
+	std::cout<< "Dirty evictions: "<< DIRTY_EVICTION_p <<'\n';
+	std::cout<< "Load misses: "<< LOAD_MISS_p <<'\n';
+	std::cout<< "Store misses: "<< STORE_MISS_p <<'\n';
+	std::cout<< "Total_misses: "<< LOAD_MISS_p+STORE_MISS_p <<'\n';
+	std::cout<< "Load hits: "<< LOAD_HIT_p <<'\n';
+	std::cout<< "Store hits: "<< STORE_HIT_p <<'\n';
+	std::cout<< "Total hits: "<< LOAD_HIT_p + STORE_HIT_p <<'\n';
 	exit (0);
 }
-
 int main(int argc, char * argv []) {
   printf("Do something :), don't forget to keep track of execution time");
   /* Parse argruments */
@@ -44,13 +43,19 @@ int main(int argc, char * argv []) {
   
 /*-------------------------Jonathan Ramirez------------------------------------------*/
 
+	float load_h = 0;
+	float load_m = 0;
+	float store_h = 0;
+	float store_m = 0;
+	float dirty_eviction = 0;	    	
+
 	int policy;
 	int TOTAL_ADDRESS = 0;
 	
 	int size_p=atoi(argv[2]);
 	int assoc_p=atoi(argv[4]);
 	int block_p=atoi(argv[6]);
-	
+
 	const char *LRU_policy = "LRU";
 	const char *NRU_policy = "NRU";
 	const char *RRIP_policy = "RRIP";
@@ -75,13 +80,12 @@ int main(int argc, char * argv []) {
 	{
 		policy = RANDOM;
 	}	
-	
-	struct cache_pararms argv_prm;
+	struct cache_params argv_prm;
 	
 	argv_prm.size = size_p;
 	argv_prm.asociativity = assoc_p;
 	argv_prm.block_size = block_p;
-	
+
 	int tags = (size_p*1024)/block_p;    /* REVISAR */ 
 	int sets = (size_p*1024)/(block_p*assoc_p);
 
@@ -100,8 +104,7 @@ int main(int argc, char * argv []) {
 		cache_tags[i]->obl_tag = 0;
 	}
 	
-	struct operation_result *op_out[sets*assoc_p], result_out[sets*assoc_p];
-	for(int i = 0; i < sets*assoc_p; i++)	/* mem allocation */
+	/*for(int i = 0; i < sets*assoc_p; i++)
 	{
 		op_out[i] = &result_out[i];
 	}	
@@ -110,7 +113,7 @@ int main(int argc, char * argv []) {
 	{
 		op_out[i]->dirty_eviction = 0;
 		op_out[i]->evicted_address = 0;
-	}
+	}*/
 		
 	struct cache_field_size *argv_out, field_out;
 	argv_out = &field_out; /* mem allocation*/	
@@ -118,14 +121,18 @@ int main(int argc, char * argv []) {
 	//idx, offset, tag bits from parameters.
 	field_size_get(argv_prm, argv_out);
 	
+ 	struct operation_result *op_out, result_out;
+	op_out = &result_out;	
+	
 	/* Parse arguments */
 	/* Get trace's lines and start your simulation */
 	
 	/*Index, tag from direction.*/
 	while(fgets(buffer, sizeof(buffer), stdin) != NULL)
   	{
+		//std::cout<< TOTAL_ADDRESS <<'\n';
   		TOTAL_ADDRESS = TOTAL_ADDRESS+1;
-  		
+  	
   		/* Buffer tokens */
   		const char *delim = " ";
   		const char *null = strtok(buffer, delim);
@@ -165,7 +172,7 @@ int main(int argc, char * argv []) {
 		                 	assoc_p, 
 		                   	type_op, 
 		                   	*cache_tags,
-		                   	*op_out,
+		                   	op_out,
 		                   	debug);
 				/*Usar contadores que están definidos en el header */
 			}		
@@ -179,7 +186,7 @@ int main(int argc, char * argv []) {
 		                 	assoc_p, 
 		                   	type_op, 
 		                   	*cache_tags,
-		                   	*op_out,
+		                   	op_out,
 		                   	debug);
 			}
 			
@@ -191,7 +198,7 @@ int main(int argc, char * argv []) {
 		                 	assoc_p, 
 		                   	type_op, 
 		                   	*cache_tags,
-		                   	*op_out,
+		                   	op_out,
 		                   	debug);
 				
 				/*Usar contadores que están definidos en el header */
@@ -206,24 +213,30 @@ int main(int argc, char * argv []) {
 				policy = num;
 				goto POLICY;
 			}
-		/*-----------------------------------------------------------------------------------------------*/		
+		/*-----------------------------------------------------------------------------------------------*/	
+		
+		/* Metrics */
+		if (op_out->miss_hit == HIT_LOAD){
+		load_h++;
+		} 
+		else if (op_out->miss_hit == MISS_LOAD){
+		load_m++;
+		}
+		else if (op_out->miss_hit == HIT_STORE){
+		store_h++;
+		}
+		else if (op_out->miss_hit == MISS_STORE){
+		store_m++;
+		}
+		if (op_out->dirty_eviction == true){
+		dirty_eviction++;
+		}			
   	}
   	fclose(stdin);
-	int dirty_count;
-	for(i=0;i<sets*assoc_p;i++)
-	{
-		if(operation_result[i].dirty_eviction == 1)
-		{
-			dirty_count = dirty_count+1;	
-		}
-	}
-  /*-------------------------------------------------------------------------------*/
 	/* Print cache configuration */
 	
 	print_cache(size_p, assoc_p, block_p);
-  
 	/* Print Statistics */
-	print_usage(LOAD_MISS, STORE_MISS, LOAD_HIT, STORE_HIT, DIRTY_EVICTION, TOTAL_ADDRESS);
-	std::cout<< TOTAL_ADDRESS<<'\n';
-return 0;
+	print_usage(load_m, store_m, load_h, store_h, dirty_eviction, TOTAL_ADDRESS);
+	return 0;
 }
