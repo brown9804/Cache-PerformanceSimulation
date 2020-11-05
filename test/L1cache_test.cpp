@@ -336,6 +336,7 @@ TEST_F(L1cache, promotion){
 			}
 		}	
 	}
+	
 	/* Insert a new block A */
 	struct entry A[1];
  	A[0].valid = true;
@@ -416,10 +417,10 @@ TEST_F(L1cache, promotion){
 	}
 		
 	/* Keep inserting new blocks until A is evicted */
-	int tag_random = rand()%4096;
 	
 	while(result.evicted_address != A[0].tag)
 	{
+		int tag_random = rand()%4096; /* If only one random tag desired, set it before while */
 		if(policy == 0)	//LRU
 		{
 			lru_replacement_policy (idx,
@@ -487,7 +488,7 @@ TEST_F(L1cache, writeback){
   	policy = rand()%3;
 
  	/* Choose a random associativity */
-  	associativity = 1 << (rand()%4);
+  	associativity = 1 << (rand()%5);
 
 	/* Fill a random cache entry with read-only operations*/
 	struct entry cache_set_A[associativity];
@@ -500,6 +501,7 @@ TEST_F(L1cache, writeback){
 		cache_set_A[i].valid = true;
 		cache_set_A[i].dirty = 0; 
 		cache_set_A[i].tag = rand()%4096; 
+		
 		if(cache_set_A[i].tag == tag)
 		{
 			 cache_set_A[i].tag = rand()%4096;
@@ -827,20 +829,55 @@ TEST_F(L1cache, boundaries){
 	int tag;
 	int associativity = 1;//just necesary for cache line definition
 	int policy;
-	bool loadstore;
-	bool debug;
-	int expected_param_result = PARAM;
-	int parameter_result;
+	bool loadstore = false;
+	bool debug = false;
+	bool expected_param_result = PARAM;
+	bool parameter_result = true;
 	struct entry cache_set[associativity];
+	//struct entry cache_set_B[associativity];
 	struct operation_result result = {};
-
+	
 	/*Choose a random policy*/
 	policy = rand()%3;//Check
-
+	
+	/* Random tag */
+	//tag = rand()%4096; /* Random test: uncomment */
+	idx = rand()%1024;
+	
 	/*Choose invalid parameters for idx, tag and asociativy*/
 	idx = -12;
 	tag = -9;
-	associativity = 12;
+	associativity = 12;	
+	
+	
+	for(int i=0;i<associativity;i++)
+	{
+		cache_set[i].valid = true;
+		cache_set[i].dirty = 0; 
+		cache_set[i].tag = rand()%4096; 
+		cache_set[i].tag = rand()%4096;
+		
+		/* Policy rp value*/
+		if(policy == 0)	//LRU
+		{
+			cache_set[i].rp_value = 0;
+		}
+		else if(policy == 1)	//NRU
+		{
+			cache_set[i].rp_value = 1;
+		}
+		else if(policy == 2)	//SRRIP
+		{
+			if(associativity <= 2)
+			{
+				cache_set[i].rp_value = 1;
+			}
+			else
+			{
+				cache_set[i].rp_value = 3;
+			}
+		}	
+	}
 
 	if(policy == 0)	//LRU
 	{
@@ -851,7 +888,6 @@ TEST_F(L1cache, boundaries){
 				        cache_set,
 				        &result,
 				        bool(debug_on));
-		EXPECT_EQ(expected_param_result, parameter_result);
 	}
 	else if(policy == 1)	//NRU
 	{
@@ -861,8 +897,7 @@ TEST_F(L1cache, boundaries){
 				        loadstore,
 				        cache_set,
 				        &result,
-				        bool(debug_on));
-		EXPECT_EQ(expected_param_result, parameter_result);		
+				        bool(debug_on));		
 	}
 	else if(policy == 2)	//SRRIP
 	{
@@ -872,7 +907,7 @@ TEST_F(L1cache, boundaries){
 				        loadstore,
 				        cache_set,
 				        &result,
-				        bool(debug_on));
-		EXPECT_EQ(expected_param_result, parameter_result);		
+				        bool(debug_on));	
 	} 
+	EXPECT_EQ(expected_param_result, parameter_result);
 }
