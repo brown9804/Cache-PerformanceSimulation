@@ -18,12 +18,12 @@ Code baseline for IE0521 cache simulation project
 ### Dependencies
 Make sure gtest is install:
 ```
-sudo apt-get install libgtest-dev
-
-sudo apt-get install cmake # install cmake
-cd /usr/src/gtest
-sudo cmake CMakeLists.txt
-sudo make
+$ sudo apt-get update
+$ sudo apt-get install libgtest-dev
+$ sudo apt-get install cmake # install cmake
+$ cd /usr/src/gtest
+$ sudo cmake CMakeLists.txt
+$sudo make
 ```
 See https://cit.dixie.edu/faculty/larsen/google-test-installation.php for more information
 
