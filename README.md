@@ -46,6 +46,9 @@ Go to build and make cachetest. There are several options to run the tests.
 ```
   ./test/cachetest  --gtest_filter=<test_name>
   Ex: ./test/cachetest  --gtest_filter=L1cache.hit_miss_srrip
+  ###### Advanced Optimizations
+  Ex: ./test/cachetest  --gtest_filter=L2cache.l1_hit_l2_hit
+  Ex: ./test/cachetest  --gtest_filter=VCcache.l1_miss_vc_hit
 ```
 3. Run a set of test using regular expressions
 ```
@@ -75,4 +78,5 @@ The simulation executable is located inside the build directory (src/cache)
 ```
 gunzip -c <trace> | <l1cache executable>  -a <associativity>  -s <cache size KB> -l <block size in bytes> -rp <replacement policy>
 ```
+
 
