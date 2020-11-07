@@ -62,7 +62,7 @@ int main(int argc, char * argv []) {
 
 	const char *LRU_policy = "LRU";
 	const char *NRU_policy = "NRU";
-	const char *RRIP_policy = "RRIP";
+	const char *RRIP_policy = "SRRIP";
 	const char *random = "RANDOM";
 	
 	if(*argv[8]==*LRU_policy)
