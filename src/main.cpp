@@ -36,10 +36,14 @@ void print_usage (int LOAD_MISS_p, int STORE_MISS_p, int LOAD_HIT_p, int STORE_H
 	exit (0);
 }
 int main(int argc, char * argv []) {
-  printf("Do something :), don't forget to keep track of execution time");
+  printf("Do something :), don't forget to keep track of execution time \n");
   /* Parse argruments */
   
-  
+  // Time Implementation - Brown, Belinda 
+  time_t current_time;
+  time_t final_time;
+
+  time(&current_time); // capture time
   
 /*-------------------------Jonathan Ramirez------------------------------------------*/
 
@@ -233,8 +237,12 @@ int main(int argc, char * argv []) {
 		}			
   	}
   	fclose(stdin);
+	// Time Implementation - Brown, Belinda
+	time(&final_time); // capture time
+        int ex_time = difftime(final_time,current_time);
+	std::cout << "Time running: " << ex_time << " seconds" << std::endl;
+
 	/* Print cache configuration */
-	
 	print_cache(size_p, assoc_p, block_p);
 	/* Print Statistics */
 	print_usage(load_m, store_m, load_h, store_h, dirty_eviction, TOTAL_ADDRESS);
