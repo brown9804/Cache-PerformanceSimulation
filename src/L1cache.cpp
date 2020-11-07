@@ -277,7 +277,7 @@ int srrip_replacement_policy (int idx,
    } // end if ((empty_found_YorN == false) && (hit_found_YorN == false))
    return OK;
    } // end big one else ---- else of (idx < 0 || tag < 0 || associativity < 0)
-} // end policy ssrip
+} // end policy srrip
 
 ////////////////////////////////////////////////////////////////////	   	   
 // https://www.tutorialspoint.com/cplusplus/cpp_goto_statement.htm
