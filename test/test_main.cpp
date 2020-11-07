@@ -20,6 +20,12 @@ int main(int argc, char **argv) {
   /* Generate seed */
   seed = time(NULL) & 0xffff;
 
+  /// For L2cachetest - some examples of seeds that works 
+  /// 31, 36, 39, 43, 54 65534  
+  
+  /// For VCcachetest - some examples of seeds that works 
+  /// 4297,4308, 38502, 38531, 39095, 39104 
+  
   /* Parse arguments looking if random seed was provided */
   argv_to_pass = (char **)calloc(argc + 1, sizeof(char *));
   
