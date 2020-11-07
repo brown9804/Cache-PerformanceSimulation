@@ -36,7 +36,7 @@ void print_usage (int LOAD_MISS_p, int STORE_MISS_p, int LOAD_HIT_p, int STORE_H
 	exit (0);
 }
 int main(int argc, char * argv []) {
-  printf("Do something :), don't forget to keep track of execution time \n");
+  // printf("Do something :), don't forget to keep track of execution time \n");
   /* Parse argruments */
   
   // Time Implementation - Brown, Belinda 
