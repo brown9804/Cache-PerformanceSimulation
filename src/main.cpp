@@ -80,7 +80,7 @@ int main(int argc, char * argv []) {
 		policy = RRIP;
 	}
 	
-	else if(*argv[8]==*random)
+	else // (*argv[8]==*random)
 	{
 		policy = RANDOM;
 	}	
@@ -182,7 +182,7 @@ int main(int argc, char * argv []) {
 			}		
 			
 			
-			if(policy == 1) /* NRU */
+			else if(policy == 1) /* NRU */
 			{
 				nru_replacement_policy(
 					*index,
@@ -194,7 +194,7 @@ int main(int argc, char * argv []) {
 		                   	debug);
 			}
 			
-			if(policy == 2) /* RRIP */
+			else if(policy == 2) /* RRIP */
 			{
 				srrip_replacement_policy(
 					*index,
@@ -209,7 +209,7 @@ int main(int argc, char * argv []) {
 				
 			}
 			
-			if(policy == 3)
+			else // (policy == 3) // random 
 			{
 				int num;
 				srand(time(NULL));
