@@ -133,16 +133,17 @@ int srrip_replacement_policy (int idx,
    {
       return PARAM;
    }
-   // associativity <= 2
-   if (associativity <= 2)
-   {
-      M = 1;
-   }
-   // if not
-   else
-   {
-      M = 2;
-   }
+   else {
+	   // associativity <= 2
+	   if (associativity <= 2)
+	   {
+	      M = 1;
+	   }
+	   // if not
+	   else
+	   {
+	      M = 2;
+	   }
 
    ///////////////////////////////////////
    // Stactic RRIP - Re-reference Interval Prediction
@@ -275,9 +276,8 @@ int srrip_replacement_policy (int idx,
       } // end  else // begin higher_RRPV == false
    } // end if ((empty_found_YorN == false) && (hit_found_YorN == false))
    return OK;
- 
-   return ERROR;
-}
+   } // end big one else ---- else of (idx < 0 || tag < 0 || associativity < 0)
+} // end policy ssrip
 
 ////////////////////////////////////////////////////////////////////	   	   
 // https://www.tutorialspoint.com/cplusplus/cpp_goto_statement.htm
