@@ -70,17 +70,17 @@ int main(int argc, char * argv []) {
 		policy = LRU;
 	}	
 	
-	if(*argv[8]==*NRU_policy)
+	else if(*argv[8]==*NRU_policy)
 	{
 		policy = NRU;
 	}
 	
-	if(*argv[8]==*RRIP_policy)
+	else if(*argv[8]==*RRIP_policy)
 	{
 		policy = RRIP;
 	}
 	
-	if(*argv[8]==*random)
+	else if(*argv[8]==*random)
 	{
 		policy = RANDOM;
 	}	
