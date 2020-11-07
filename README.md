@@ -36,7 +36,7 @@ Create a build directory and run all targets there
 >> make <target> (cache or cachetest)
 ```
 ## How to run the simulation
-The simulation executable is located inside the build directory (src/cache)
+The simulation executable is located inside the build directory (src/cache). All commands are executed within Cache-Performance Simulation, the rest of the relative paths have already been considered.
 
 ```
 gunzip -c <trace> | <l1cache executable>  -a <associativity>  -s <cache size KB> -l <block size in bytes> -rp <replacement policy>
@@ -46,22 +46,24 @@ Ex: gunzip -c ./input/mcf.trace.gz | ./build/src/cache -t 32 -a 4 -l 64 -rp 0
 ```
 
 ## How to run the tests
-Go to build and make cachetest. There are several options to run the tests.
+Go to build and make cachetest. There are several options to run the tests. 
 
 1. Run all tests:
 ```
   ./test/cachetest
 ```
 2. Run only one test:
+
+P.D: All commands are executed within Cache-Performance Simulation, the rest of the relative paths have already been considered.
 ```
   ./test/cachetest  --gtest_filter=<test_name>
   ##### Google's gtest framework
-  Ex: ./test/cachetest  --gtest_filter=L1cache.hit_miss_srrip
-  Ex: ./test/cachetest  --gtest_filter=L1cache.hit_miss_lru
-  Ex: ./test/cachetest  --gtest_filter=L1cache.hit_miss_nru
+  Ex: ./build/test/cachetest  --gtest_filter=L1cache.hit_miss_srrip
+  Ex: ./build/test/cachetest  --gtest_filter=L1cache.hit_miss_lru
+  Ex: ./build/test/cachetest  --gtest_filter=L1cache.hit_miss_nru
   ###### Advanced Optimizations
-  Ex: ./test/cachetest  --gtest_filter=L2cache.l1_hit_l2_hit
-  Ex: ./test/cachetest  --gtest_filter=VCcache.l1_miss_vc_hit
+  Ex: ./build/test/cachetest  --gtest_filter=L2cache.l1_hit_l2_hit
+  Ex: ./build/test/cachetest  --gtest_filter=VCcache.l1_miss_vc_hit
 ```
 3. Run a set of test using regular expressions
 ```
