@@ -300,6 +300,9 @@ int srrip_replacement_policy (int idx,
 }
 
 // ------------- END - BROWN, BELINDA ----------------
+
+// ------------- BEGIN - ESQUIVEL, BRANDON ----------------
+
   /*LRU Policy:
 The LRU algorithm (less recently used for its acronym in English), tries to reduce the possibility
 of discarding blocks that are going to be used again in the near future. For this, the information
