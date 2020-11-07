@@ -273,7 +273,7 @@ int srrip_replacement_policy (int idx,
          } // end  for (int i = 0; i < associativity; i= i + 1)
          goto ImmediateFuture ;
       } // end  else // begin higher_RRPV == false
-   }
+   } // end if ((empty_found_YorN == false) && (hit_found_YorN == false))
    return OK;
  
    return ERROR;
