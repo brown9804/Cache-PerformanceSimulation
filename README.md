@@ -57,8 +57,8 @@ Go to build and make cachetest. There are several options to run the tests.
   ./test/cachetest  --gtest_filter=<test_name>
   ##### Google's gtest framework
   Ex: ./test/cachetest  --gtest_filter=L1cache.hit_miss_srrip
-  Ex: ./test/cachetest  --gtest_filter=L1cache.hit_miss_nru
   Ex: ./test/cachetest  --gtest_filter=L1cache.hit_miss_lru
+  Ex: ./test/cachetest  --gtest_filter=L1cache.hit_miss_nru
   ###### Advanced Optimizations
   Ex: ./test/cachetest  --gtest_filter=L2cache.l1_hit_l2_hit
   Ex: ./test/cachetest  --gtest_filter=VCcache.l1_miss_vc_hit
