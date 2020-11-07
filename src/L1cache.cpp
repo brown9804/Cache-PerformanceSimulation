@@ -68,6 +68,7 @@ void address_tag_idx_get(long address,
    *idx = (address >> field_size.offset) & indexMASK;
    *tag = (address >> (field_size.offset + field_size.idx)) & tagMASK;
 }
+
 // ------------- BEGIN - BROWN, BELINDA ----------------
 // @brown9804 Belinda Brown
 // timna.brown@ucr.ac.cr
