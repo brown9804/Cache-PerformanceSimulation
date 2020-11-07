@@ -35,6 +35,16 @@ Create a build directory and run all targets there
 >> cmake ..
 >> make <target> (cache or cachetest)
 ```
+## How to run the simulation
+The simulation executable is located inside the build directory (src/cache)
+
+```
+gunzip -c <trace> | <l1cache executable>  -a <associativity>  -s <cache size KB> -l <block size in bytes> -rp <replacement policy>
+
+Using -  LRU, NRU, RRIP or RANDOM
+Ex: gunzip -c ./input/mcf.trace.gz | ./build/src/cache -t 32 -a 4 -l 64 -rp 0
+```
+
 ## How to run the tests
 Go to build and make cachetest. There are several options to run the tests.
 
@@ -45,7 +55,10 @@ Go to build and make cachetest. There are several options to run the tests.
 2. Run only one test:
 ```
   ./test/cachetest  --gtest_filter=<test_name>
+  ##### Google's gtest framework
   Ex: ./test/cachetest  --gtest_filter=L1cache.hit_miss_srrip
+  Ex: ./test/cachetest  --gtest_filter=L1cache.hit_miss_nru
+  Ex: ./test/cachetest  --gtest_filter=L1cache.hit_miss_lru
   ###### Advanced Optimizations
   Ex: ./test/cachetest  --gtest_filter=L2cache.l1_hit_l2_hit
   Ex: ./test/cachetest  --gtest_filter=VCcache.l1_miss_vc_hit
@@ -73,10 +86,5 @@ export TEST_DEBUG=1
 ```
 To disable the extra logging, set the  environment variable to zero.
 
-## How to run the simulation
-The simulation executable is located inside the build directory (src/cache)
-```
-gunzip -c <trace> | <l1cache executable>  -a <associativity>  -s <cache size KB> -l <block size in bytes> -rp <replacement policy>
-```
 
 
