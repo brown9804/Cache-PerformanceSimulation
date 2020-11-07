@@ -175,6 +175,7 @@ int srrip_replacement_policy (int idx,
          }
          return OK;
       } // close cache_blocks[i].valid && tag == cache_blocks[i].tag
+	   
       // Save empty ->
       else if (!cache_blocks[i].valid && !empty_found_YorN)
       {
@@ -187,7 +188,7 @@ int srrip_replacement_policy (int idx,
          higher_RRPV = true;
          distant_Block = i;
       }
-   }
+  } // end for (int i = 0; i < associativity; i++)
 
    ///////////////////////////////////////
    // Stactic RRIP - Re-reference Interval Prediction
@@ -214,7 +215,7 @@ int srrip_replacement_policy (int idx,
          cache_blocks[space_empty].dirty = 0;
          (*result).miss_hit = MISS_LOAD;
       }
-   }
+   } // end if ((empty_found_YorN == true) && (hit_found_YorN == false))
 
    ///////////////////////////////////////
    // Stactic RRIP - Re-reference Interval Prediction
@@ -223,7 +224,61 @@ int srrip_replacement_policy (int idx,
    // FULL or MISS
    //*********************
    else if ((empty_found_YorN == false) && (hit_found_YorN == false))
-   {
+   {  
+   ImmediateFuture:
+      if (higher_RRPV == true)
+      {
+         if (cache_blocks[distant_Block].dirty)
+         { // write-back
+            (*result).dirty_eviction = true;
+         }
+         else { 
+         // vic block
+            cache_blocks[distant_Block].valid = 1;
+            cache_blocks[distant_Block].tag = tag;
+            cache_blocks[distant_Block].rp_value = long_rrpv;
+	// result 
+            (*result).dirty_eviction = false;
+            (*result).evicted_address = cache_blocks[distant_Block].tag;
+
+         } // end !cache_blocks[distant_Block].dirty 
+	      
+         if (loadstore == true)
+         { 
+         // Write
+            (*result).miss_hit = MISS_STORE;
+            cache_blocks[distant_Block].dirty = 1;
+         } // end write 
+         else
+         { 
+         // Read
+            (*result).miss_hit = MISS_LOAD;
+            cache_blocks[distant_Block].dirty = 0;
+         } // end read 
+	      
+      } //  end if (higher_RRPV == true)
+   //*********************
+   // ELSE 
+   //*********************
+      else // begin higher_RRPV == false
+      {
+         for (int i = 0; i < associativity; i= i + 1)
+         {
+            cache_blocks[i].rp_value++;
+            if ((cache_blocks[i].rp_value == distant) && (!higher_RRPV) )
+            {
+               higher_RRPV = true;
+               distant_Block = i;
+            }
+         } // end  for (int i = 0; i < associativity; i= i + 1)
+         goto ImmediateFuture ;
+      } // end  else // begin higher_RRPV == false
+   }
+   return OK;
+ 
+   return ERROR;
+}
+
 ////////////////////////////////////////////////////////////////////	   	   
 // https://www.tutorialspoint.com/cplusplus/cpp_goto_statement.htm
 // #include <iostream>
@@ -247,58 +302,7 @@ int srrip_replacement_policy (int idx,
  
 //    return 0;
 // }	
-////////////////////////////////////////////////////////////////////	   
-   ImmediateFuture:
-      if (higher_RRPV == true)
-      {
-         if (cache_blocks[distant_Block].dirty)
-         { // write-back
-            (*result).dirty_eviction = true;
-         }
-         else { 
-         // vic block
-            cache_blocks[distant_Block].valid = 1;
-            cache_blocks[distant_Block].tag = tag;
-            cache_blocks[distant_Block].rp_value = long_rrpv;
-	// result 
-            (*result).dirty_eviction = false;
-            (*result).evicted_address = cache_blocks[distant_Block].tag;
-
-         }
-         if (loadstore == true)
-         { 
-         // Write
-            (*result).miss_hit = MISS_STORE;
-            cache_blocks[distant_Block].dirty = 1;
-         } // end write 
-         else
-         { 
-         // Read
-            (*result).miss_hit = MISS_LOAD;
-            cache_blocks[distant_Block].dirty = 0;
-         } // end read 
-      }
-   //*********************
-   // ELSE 
-   //*********************
-      else
-      {
-         for (int i = 0; i < associativity; i= i + 1)
-         {
-            cache_blocks[i].rp_value++;
-            if ((cache_blocks[i].rp_value == distant) && (!higher_RRPV) )
-            {
-               higher_RRPV = true;
-               distant_Block = i;
-            }
-         }
-         goto ImmediateFuture ;
-      }
-   }
-   return OK;
- 
-   return ERROR;
-}
+////////////////////////////////////////////////////////////////////	 
 
 // ------------- END - BROWN, BELINDA ----------------
 
